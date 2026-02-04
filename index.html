@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Detection Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            color: #007bff;
+        }
+        header p {
+            font-size: 1.2em;
+            margin: 10px 0 0;
+        }
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .section {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+        }
+        .section h2 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        video, canvas {
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            margin: 10px 0;
+            max-width: 100%;
+            display: block;
+        }
+        button {
+            padding: 12px 24px;
+            margin: 10px 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result, #metrics {
+            margin-top: 20px;
+            font-size: 18px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 5px solid #007bff;
+        }
+        #metrics {
+            font-size: 16px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        footer p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Emotion Detection Tool</h1>
+            <p>A simple web-based tool for capturing photos and analyzing facial emotions. Perfect for educational projects!</p>
+        </header>
+
+        <div class="main-content">
+            <div class="section">
+                <h2>Camera & Capture</h2>
+                <p>Start your camera, capture a photo, and detect emotions. Note: This uses simulated detection for demonstration purposes.</p>
+                <video id="video" width="320" height="240" autoplay></video>
+                <br>
+                <button id="startCamera">Start Camera</button>
+                <button id="capture">Capture Photo</button>
+                <button id="detectEmotion">Detect Emotion</button>
+            </div>
+
+            <div class="section">
+                <h2>Results</h2>
+                <canvas id="canvas" width="320" height="240"></canvas>
+                <div id="result"></div>
+                <div id="metrics"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Created for educational purposes. Emotion detection is simulated. Ensure camera permissions are granted for full functionality.</p>
+        </footer>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const resultDiv = document.getElementById('result');
+        const metricsDiv = document.getElementById('metrics');
+        let stream;
+
+        // Start camera
+        document.getElementById('startCamera').addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                alert('Error accessing camera: ' + err.message);
+            }
+        });
+
+        // Capture photo
+        document.getElementById('capture').addEventListener('click', () => {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            resultDiv.textContent = 'Photo captured! Click "Detect Emotion" to analyze.';
+            metricsDiv.textContent = ''; // Clear previous metrics
+        });
+
+        // Detect emotion (fake) and display on canvas with fake metrics
+        document.getElementById('detectEmotion').addEventListener('click', () => {
+            // Redraw the captured image
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Fake emotion detection
+            const emotions = ['happy', 'sad', 'angry', 'surprised', 'neutral', 'fearful', 'disgusted'];
+            const fakeEmotion = emotions[Math.floor(Math.random() * emotions.length)];
+            const fakeConfidence = Math.floor(Math.random() * 21) + 80; // 80-100%
+            
+            // Draw fake overlay (simple text on canvas)
+            ctx.font = '20px Arial';
+            ctx.fillStyle = 'red';
+            ctx.fillText(`Emotion: ${fakeEmotion}`, 10, 30);
+            
+            resultDiv.textContent = `Detected Emotion: ${fakeEmotion} (Confidence: ${fakeConfidence}%)`;
+            
+            // Generate fake metrics
+            const blinkRate = Math.floor(Math.random() * 21) + 10; // Random 10-30 blinks/min
+            const accuracy = Math.floor(Math.random() * 21) + 80; // Random 80-100%
+            let status = 'Normal';
+            if (fakeEmotion === 'sad' || fakeEmotion === 'angry') {
+                status = 'Potentially Stressed';
+            } else if (fakeEmotion === 'happy' || fakeEmotion === 'surprised') {
+                status = 'Relaxed';
+            } else if (blinkRate > 25) {
+                status = 'High Blink Rate - Possible Fatigue';
+            }
+            
+            metricsDiv.innerHTML = `
+                <strong>Metrics:</strong><br>
+                Eye Blink Rate: ${blinkRate} blinks/min<br>
+                Detection Accuracy: ${accuracy}%<br>
+                Emotion Status: ${status}
+            `;
+        });
+    </script>
+</body>
+</html>
